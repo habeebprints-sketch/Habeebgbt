@@ -5,117 +5,69 @@
 
   <style>
     body {
-  background: #0f172a;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-#chat {
-  max-width: 600px;
-  margin: auto;
-  padding: 10px;
-  padding-bottom: 100px;
-}
-
-.msg {
-  margin: 10px;
-  padding: 12px 16px;
-  border-radius: 20px;
-  max-width: 80%;
-}
-
-.user {
-  background: #2563eb;
-  margin-left: auto;
-  text-align: right;
-}
-
-.bot {
-  background: #1e293b;
-  margin-right: auto;
-}
-
-/* 🔥 ChatGPT-style input */
-.input-box {
-  position: fixed;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 95%;
-  max-width: 600px;
-  background: #1e293b;
-  border-radius: 30px;
-  display: flex;
-  padding: 10px;
-}
-
-.input-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: white;
-  font-size: 16px;
-  padding: 10px;
-}
-
-.input-box button {
-  background: #2563eb;
-  border: none;
-  color: white;
-  font-size: 18px;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-}
-    }
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
     }
 
     #chat {
       max-width: 600px;
       margin: auto;
       padding: 10px;
-      padding-bottom: 80px;
+      padding-bottom: 100px;
     }
 
     .msg {
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 10px;
+      margin: 10px;
+      padding: 12px 16px;
+      border-radius: 20px;
+      max-width: 80%;
     }
 
     .user {
       background: #2563eb;
+      margin-left: auto;
       text-align: right;
     }
 
     .bot {
       background: #1e293b;
+      margin-right: auto;
     }
 
-    .input-area {
+    /* ChatGPT-style input */
+    .input-box {
       position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #0f172a;
-      padding: 10px;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 95%;
+      max-width: 600px;
+      background: #1e293b;
+      border-radius: 30px;
       display: flex;
+      padding: 10px;
     }
 
-    input {
+    .input-box input {
       flex: 1;
-      padding: 10px;
       border: none;
       outline: none;
+      background: transparent;
+      color: white;
+      font-size: 16px;
+      padding: 10px;
     }
 
-    button {
-      padding: 10px;
-      margin-left: 5px;
-      border: none;
+    .input-box button {
       background: #2563eb;
+      border: none;
       color: white;
-      cursor: pointer;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
     }
   </style>
 </head>
@@ -124,9 +76,10 @@
 
   <div id="chat"></div>
 
-  <div class="input-area">
-    <input id="input" placeholder="Type a message..." />
-    <button onclick="send()">Send</button>
+  <!-- Input -->
+  <div class="input-box">
+    <input id="input" placeholder="Message ChatGPT..." />
+    <button onclick="send()">➤</button>
   </div>
 
   <script>
@@ -134,7 +87,7 @@
       const input = document.getElementById("input");
       const chat = document.getElementById("chat");
 
-      if (!input.value) return;
+      if (!input.value.trim()) return;
 
       // User message
       const userMsg = document.createElement("div");
@@ -142,15 +95,13 @@
       userMsg.textContent = input.value;
       chat.appendChild(userMsg);
 
-      // Call backend
+      // Send to backend
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          message: input.value
-        })
+        body: JSON.stringify({ message: input.value })
       });
 
       const data = await res.json();
@@ -161,7 +112,10 @@
       botMsg.textContent = data.message || "No response";
       chat.appendChild(botMsg);
 
+      // Clear input
       input.value = "";
+
+      // Auto scroll
       chat.scrollTop = chat.scrollHeight;
     }
   </script>
