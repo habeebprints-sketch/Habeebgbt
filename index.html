@@ -2,51 +2,109 @@
 <html>
 <head>
   <title>HabeebGPT</title>
+
   <style>
-    body { background:#0f172a; color:white; font-family:sans-serif; }
-    #chat { max-width:600px; margin:auto; padding:20px; }
-    .msg { margin:10px 0; padding:10px; border-radius:10px; }
-    .user { background:#2563eb; text-align:right; }
-    .bot { background:#1e293b; }
-    input { width:80%; padding:10px; }
-    button { padding:10px; }
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+    }
+
+    #chat {
+      max-width: 600px;
+      margin: auto;
+      padding: 10px;
+      padding-bottom: 80px;
+    }
+
+    .msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .user {
+      background: #2563eb;
+      text-align: right;
+    }
+
+    .bot {
+      background: #1e293b;
+    }
+
+    .input-area {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #0f172a;
+      padding: 10px;
+      display: flex;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px;
+      margin-left: 5px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
+
 <body>
 
-<div id="chat"></div>
+  <div id="chat"></div>
 
-<div style="position:fixed; bottom:10px; width:100%; text-align:center;">
-  <input id="input" placeholder="Type a message..." />
-  <button onclick="send()">Send</button>
-</div>
+  <div class="input-area">
+    <input id="input" placeholder="Type a message..." />
+    <button onclick="send()">Send</button>
+  </div>
 
-<script>
-async function send() {
-  const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
+  <script>
+    async function send() {
+      const input = document.getElementById("input");
+      const chat = document.getElementById("chat");
 
-  const userMsg = document.createElement("div");
-  userMsg.className = "msg user";
-  userMsg.textContent = input.value;
-  chat.appendChild(userMsg);
+      if (!input.value) return;
 
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ message: input.value })
-  });
+      // User message
+      const userMsg = document.createElement("div");
+      userMsg.className = "msg user";
+      userMsg.textContent = input.value;
+      chat.appendChild(userMsg);
 
-  const data = await res.json();
+      // Call backend
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: input.value
+        })
+      });
 
-  const botMsg = document.createElement("div");
-  botMsg.className = "msg bot";
-  botMsg.textContent = data.message || "No response";
-  chat.appendChild(botMsg);
+      const data = await res.json();
 
-  input.value = "";
-}
-</script>
+      // Bot message
+      const botMsg = document.createElement("div");
+      botMsg.className = "msg bot";
+      botMsg.textContent = data.message || "No response";
+      chat.appendChild(botMsg);
+
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
 
 </body>
 </html>
